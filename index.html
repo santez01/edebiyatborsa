@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edebiyat Borsa RPG | Geleceği Yönet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #4f46e5; --bg: #0f172a; --text: #f8fafc; 
+            --card: rgba(30, 41, 59, 0.7); --border: rgba(255, 255, 255, 0.1); 
+            --accent: #38bdf8; --success: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+        
+        /* Premium Arka Plan Efekti */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%);
+            z-index: -1;
+        }
+
+        /* Borsa Ticker - Daha Sade */
+        .ticker-wrap { background: rgba(0, 0, 0, 0.3); border-bottom: 1px solid var(--border); padding: 12px 0; }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 30s linear infinite; font-size: 0.85rem; letter-spacing: 1px; opacity: 0.8; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* Geri Sayım - Modern */
+        .countdown-bar { padding: 10px; text-align: center; font-size: 0.8rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+
+        /* Hero Bölümü */
+        .hero { text-align: center; margin-bottom: 50px; }
+        h1 { font-size: 2.8rem; font-weight: 900; background: linear-gradient(to right, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
+        p { opacity: 0.7; line-height: 1.6; font-size: 1.1rem; }
+
+        /* Ana Kart Tasarımı (Glassmorphism) */
+        .main-card {
+            background: var(--card); backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: 24px;
+            padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .q-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .q-option { 
+            width: 100%; padding: 16px; margin-bottom: 12px; 
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 12px; color: var(--text); cursor: pointer;
+            text-align: left; font-size: 1rem; transition: 0.2s;
+        }
+        .q-option:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); }
+
+        /* Buton Tasarımı */
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: var(--primary); color: white; padding: 18px 36px;
+            border-radius: 16px; text-decoration: none; font-weight: 700;
+            font-size: 1.1rem; transition: 0.3s; margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+        .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(79, 70, 229, 0.5); }
+
+        .feedback { margin-top: 20px; font-weight: 600; min-height: 24px; }
+
+        footer { text-align: center; padding: 40px; opacity: 0.4; font-size: 0.8rem; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .highlight { animation: pulse 1s infinite; border-color: var(--success) !important; }
+    </style>
+</head>
+<body>
+
+    <div class="ticker-wrap"><div class="ticker">EST-YZR ENDEKSİ: +4.2% &nbsp;&nbsp;&nbsp; PORTFÖY HACMİ: 1.2M EA &nbsp;&nbsp;&nbsp; YKS 2026 STRATEJİSİ HAZIR &nbsp;&nbsp;&nbsp; SANTEZ SOFTWARE ECOSYSTEM</div></div>
+    <div class="countdown-bar" id="countdown">YKS 2026: -- GÜN -- SAAT</div>
+
+    <div class="container">
+        <section class="hero">
+            <h1>Edebiyat Borsa RPG</h1>
+            <p>Bilgini sermayeye dönüştür. Eser-yazar bilgisini borsa dinamikleriyle harmanlayan özel çalışma alanı.</p>
+        </section>
+
+        <div class="main-card" id="interactive-area">
+            <div class="q-title"><i class="fas fa-shield-halved" style="color: var(--accent);"></i> Günün Analiz Sorusu</div>
+            <p style="margin-bottom: 20px; opacity: 0.9;">"Şair Evlenmesi" adlı ilk yerli tiyatro eserimiz kime aittir?</p>
+            
+            <button class="q-option" onclick="handleResponse(false, this)">Namık Kemal</button>
+            <button class="q-option" onclick="handleResponse(true, this)">İbrahim Şinasi</button>
+            <button class="q-option" onclick="handleResponse(false, this)">Abdülhak Hamit Tarhan</button>
+            
+            <div class="feedback" id="msg"></div>
+            
+            <div style="text-align: center;">
+                <a href="edebiyatborsa.apk" class="cta-btn" id="mainLink" style="display: none;">
+                    Sisteme Giriş Yap <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="main-card" style="padding: 20px; text-align: center;">
+                <h4 style="color: var(--accent);">Aktif Oyuncu</h4>
+                <div style="font-size: 1.5rem; font-weight: 800; margin-top: 10px;">+2.400</div>
+            </div>
+            <div class="main-card" style="padding: 20px; text-align: center;">
+                <h4 style="color: var(--accent);">Haftalık Soru</h4>
+                <div style="font-size: 1.5rem; font-weight: 800; margin-top: 10px;">15.000+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2026 Santez Software | Secure Access System</footer>
+
+    <script>
+        // YKS Tarihi: 20 Haziran 2026 10:15
+        const target = new Date("June 20, 2026 10:15:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const d = target - now;
+            const days = Math.floor(d / 86400000);
+            const hours = Math.floor((d % 86400000) / 3600000);
+            const mins = Math.floor((d % 3600000) / 60000);
+            document.getElementById("countdown").innerHTML = `YKS 2026: ${days} GÜN ${hours} SAAT ${mins} DAKİKA KALDI`;
+        }, 1000);
+
+        function handleResponse(isCorrect, btn) {
+            const msg = document.getElementById('msg');
+            const mainLink = document.getElementById('mainLink');
+            const options = document.querySelectorAll('.q-option');
+
+            options.forEach(o => o.style.opacity = "0.5");
+            btn.style.opacity = "1";
+
+            if(isCorrect) {
+                msg.style.color = "var(--success)";
+                msg.innerHTML = "✓ Analiz Doğrulandı. Erişim yetkisi tanımlandı.";
+                btn.classList.add('highlight');
+                
+                // Konfeti yok, doğrudan butona yönlendir
+                setTimeout(() => {
+                    document.getElementById('interactive-area').style.borderColor = "var(--success)";
+                    mainLink.style.display = "inline-flex";
+                    mainLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 800);
+            } else {
+                msg.style.color = "#ef4444";
+                msg.innerHTML = "! Hatalı veri girişi. Doğru yanıt ile sisteme erişebilirsiniz.";
+                setTimeout(() => {
+                    options.forEach(o => { o.style.opacity = "1"; o.disabled = false; });
+                    msg.innerHTML = "";
+                }, 2000);
+            }
+            options.forEach(o => o.disabled = true);
+        }
+    </script>
+</body>
+</html>
