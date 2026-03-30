@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edebiyat Borsa | Güvenli Erişim</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #4f46e5; --bg: #0b0f1a; --text: #f8fafc; 
+            --card: rgba(22, 30, 46, 0.9); --border: rgba(99, 102, 241, 0.2); 
+            --accent: #fbbf24; --success: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+        /* Arka Plan Efekti */
+        .bg-glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0b0f1a 100%);
+            z-index: -1;
+        }
+
+        /* Yazar-Eser Bilgi Akışı (Ticker Yerine) */
+        .info-stream {
+            background: rgba(79, 70, 229, 0.1); border-bottom: 1px solid var(--border);
+            padding: 10px; text-align: center; font-size: 0.85rem; font-style: italic;
+            color: var(--accent); min-height: 40px; display: flex; align-items: center; justify-content: center;
+        }
+
+        .container { 
+            max-width: 800px; margin: 0 auto; padding: 20px; 
+            display: flex; flex-direction: column; align-items: center; gap: 25px;
+        }
+
+        /* 1. YKS Sayacı (En Üstte) */
+        .timer-box {
+            width: 100%; background: var(--card); padding: 20px;
+            border-radius: 20px; border: 1px solid var(--border); text-align: center;
+        }
+        .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .t-val { font-size: 1.5rem; font-weight: 800; color: #fff; }
+        .t-lbl { font-size: 0.6rem; opacity: 0.6; display: block; }
+
+        /* 2. Soru Alanı */
+        .main-card {
+            width: 100%; background: var(--card); padding: 30px;
+            border-radius: 24px; border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .q-option { 
+            width: 100%; padding: 15px; margin-top: 12px; 
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 12px; color: var(--text); cursor: pointer; text-align: left;
+            transition: 0.3s; font-size: 1rem;
+        }
+        .q-option:hover { background: rgba(79, 70, 229, 0.2); }
+
+        /* 3. Kilit ve İndirme Tuşu */
+        .access-area { text-align: center; width: 100%; margin-top: 10px; }
+        .lock-wrapper { font-size: 3rem; margin-bottom: 15px; color: #64748b; transition: 0.5s; }
+        .lock-unlocked { color: var(--success); transform: scale(1.1); }
+        
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: #334155; color: rgba(255,255,255,0.3); padding: 18px 40px;
+            border-radius: 15px; text-decoration: none; font-weight: 800;
+            pointer-events: none; transition: 0.5s; border: 1px solid transparent;
+        }
+        .btn-active { 
+            background: var(--primary); color: #fff; 
+            pointer-events: auto; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Mobil ve PC Uyumu */
+        @media (min-width: 768px) {
+            .container { padding: 50px 20px; gap: 40px; }
+            .t-val { font-size: 2.2rem; }
+            .q-option { font-size: 1.1rem; }
+            .main-card { padding: 40px; }
+        }
+
+        @keyframes unlockAnim {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        .unlock-bounce { animation: unlockAnim 0.5s ease; }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    
+    <div class="info-stream" id="infoStream">Veriler yükleniyor...</div>
+
+    <div class="container">
+        <div class="timer-box">
+            <small style="letter-spacing: 2px; opacity: 0.7;">HEDEF: 20 HAZİRAN 2026</small>
+            <div class="timer-grid">
+                <div><span class="t-val" id="d">00</span><span class="t-lbl">GÜN</span></div>
+                <div><span class="t-val" id="h">00</span><span class="t-lbl">SAAT</span></div>
+                <div><span class="t-val" id="m">00</span><span class="t-lbl">DK</span></div>
+                <div><span class="t-val" id="s">00</span><span class="t-lbl">SN</span></div>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <h3 style="margin-bottom: 20px; font-size: 1.2rem;">
+                <i class="fas fa-key" style="margin-right:10px; color:var(--accent)"></i>Erişim Doğrulama
+            </h3>
+            <p style="margin-bottom: 20px; opacity: 0.9; font-weight: 600;">"Şair Evlenmesi" adlı ilk yerli tiyatro eseri kime aittir?</p>
+            
+            <button class="q-option" onclick="verify(false, this)">Namık Kemal</button>
+            <button class="q-option" onclick="verify(true, this)">İbrahim Şinasi</button>
+            <button class="q-option" onclick="verify(false, this)">Ziya Paşa</button>
+        </div>
+
+        <div class="access-area">
+            <div class="lock-wrapper" id="lockIcon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <a href="edebiyatborsa.apk" class="cta-btn" id="dlBtn">
+                SİSTEME GİRİŞ YAP <i class="fas fa-chevron-right"></i>
+            </a>
+            <p id="msg" style="margin-top: 15px; font-size: 0.8rem; opacity: 0.5;">Giriş yapmak için soruyu cevaplayın.</p>
+        </div>
+    </div>
+
+    <script>
+        // Bilgi Akışı Verileri
+        const infoData = [
+            "Şinasi: İlk yerli tiyatro 'Şair Evlenmesi' yazarıdır.",
+            "Namık Kemal: 'Vatan Şairi' olarak bilinir, 'İntibah' ilk edebi romandır.",
+            "Halit Ziya: Servet-i Fünun döneminin en büyük romancısıdır.",
+            "YKS 2026 maratonunda her eser bir yatırımdır.",
+            "Santez Software: Edebiyatı borsa ile harmanlıyoruz."
+        ];
+        let infoIdx = 0;
+        setInterval(() => {
+            infoIdx = (infoIdx + 1) % infoData.length;
+            document.getElementById('infoStream').innerText = infoData[infoIdx];
+        }, 4000);
+        document.getElementById('infoStream').innerText = infoData[0];
+
+        // YKS Geri Sayım
+        const target = new Date("June 20, 2026 10:15:00").getTime();
+        function updateTimer() {
+            const now = new Date().getTime();
+            const diff = target - now;
+            document.getElementById('d').innerText = Math.floor(diff / 86400000);
+            document.getElementById('h').innerText = Math.floor((diff % 86400000) / 3600000);
+            document.getElementById('m').innerText = Math.floor((diff % 3600000) / 60000);
+            document.getElementById('s').innerText = Math.floor((diff % 60000) / 1000);
+        }
+        setInterval(updateTimer, 1000); updateTimer();
+
+        // Doğrulama ve Kilit Açma
+        function verify(correct, btn) {
+            const lock = document.getElementById('lockIcon');
+            const dlBtn = document.getElementById('dlBtn');
+            const msg = document.getElementById('msg');
+            const options = document.querySelectorAll('.q-option');
+
+            if(correct) {
+                options.forEach(o => o.style.opacity = "0.5");
+                btn.style.opacity = "1";
+                btn.style.borderColor = "var(--success)";
+                
+                // Kilit Açılma Animasyonu
+                lock.classList.add('unlock-bounce', 'lock-unlocked');
+                lock.innerHTML = '<i class="fas fa-lock-open"></i>';
+                
+                msg.innerHTML = "Erişim izni verildi. Artık giriş yapabilirsiniz.";
+                msg.style.color = "var(--success)";
+
+                setTimeout(() => {
+                    dlBtn.classList.add('btn-active');
+                    dlBtn.scrollIntoView({ behavior: 'smooth' });
+                }, 500);
+                options.forEach(o => o.disabled = true);
+            } else {
+                btn.style.borderColor = "#ef4444";
+                msg.innerHTML = "Hatalı giriş. Lütfen yazar bilgisini kontrol edin.";
+                msg.style.color = "#ef4444";
+                setTimeout(() => {
+                    btn.style.borderColor = "";
+                    msg.innerHTML = "Giriş yapmak için soruyu cevaplayın.";
+                    msg.style.color = "";
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>
