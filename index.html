@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edebiyat Borsa | Uygulamayı İndir</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #4f46e5; --bg: #0b0f1a; --text: #f8fafc; 
+            --card: rgba(22, 30, 46, 0.9); --border: rgba(99, 102, 241, 0.2); 
+            --accent: #fbbf24; --success: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+        .bg-glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0b0f1a 100%);
+            z-index: -1;
+        }
+
+        .info-stream {
+            background: rgba(79, 70, 229, 0.1); border-bottom: 1px solid var(--border);
+            padding: 12px; text-align: center; font-size: 0.85rem; font-style: italic;
+            color: var(--accent); min-height: 45px; display: flex; align-items: center; justify-content: center;
+        }
+
+        .container { 
+            max-width: 800px; margin: 0 auto; padding: 20px; 
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+        }
+
+        /* 1. YKS SAYAÇ */
+        .timer-box {
+            width: 100%; background: var(--card); padding: 25px;
+            border-radius: 24px; border: 1px solid var(--border); text-align: center;
+        }
+        .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .t-val { font-size: 1.8rem; font-weight: 800; color: #fff; }
+        .t-lbl { font-size: 0.65rem; opacity: 0.6; display: block; letter-spacing: 1px; }
+
+        /* 2. SORU ALANI */
+        .main-card {
+            width: 100%; background: var(--card); padding: 30px;
+            border-radius: 28px; border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .q-option { 
+            width: 100%; padding: 16px; margin-top: 12px; 
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 14px; color: var(--text); cursor: pointer; text-align: left;
+            transition: 0.3s; font-size: 1rem;
+        }
+        .q-option:hover { background: rgba(79, 70, 229, 0.2); transform: scale(1.01); }
+
+        /* 3. KİLİT VE İNDİRME */
+        .access-area { text-align: center; width: 100%; padding: 20px 0; }
+        .lock-wrapper { font-size: 3.5rem; margin-bottom: 20px; color: #475569; transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .lock-unlocked { color: var(--success); transform: rotate(-10deg) scale(1.2); }
+        
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 15px;
+            background: #1e293b; color: rgba(255,255,255,0.2); padding: 22px 50px;
+            border-radius: 20px; text-decoration: none; font-weight: 900;
+            font-size: 1.2rem; pointer-events: none; transition: 0.5s;
+            border: 2px solid transparent;
+        }
+        .btn-active { 
+            background: var(--primary); color: #fff; 
+            pointer-events: auto; box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        /* 4. VİDEO ALANI */
+        .video-container {
+            width: 100%; max-width: 600px; margin-top: 30px;
+            border-radius: 24px; overflow: hidden; border: 1px solid var(--border);
+            background: #000; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        .video-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; opacity: 0.5; }
+
+        @media (min-width: 768px) {
+            .container { padding: 40px 20px; gap: 30px; }
+            .t-val { font-size: 2.5rem; }
+            .main-card { padding: 45px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    
+    <div class="info-stream" id="infoStream">Sistem verileri hazırlanıyor...</div>
+
+    <div class="container">
+        <div class="timer-box">
+            <small style="letter-spacing: 3px; opacity: 0.6; font-weight: 700;">HEDEF: 20 HAZİRAN 2026</small>
+            <div class="timer-grid">
+                <div><span class="t-val" id="d">00</span><span class="t-lbl">GÜN</span></div>
+                <div><span class="t-val" id="h">00</span><span class="t-lbl">SAAT</span></div>
+                <div><span class="t-val" id="m">00</span><span class="t-lbl">DK</span></div>
+                <div><span class="t-val" id="s">00</span><span class="t-lbl">SN</span></div>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <h3 style="margin-bottom: 15px; font-size: 1.3rem; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-fingerprint" style="color:var(--primary)"></i> Erişim Doğrulama
+            </h3>
+            <p style="margin-bottom: 25px; opacity: 0.8; font-size: 1.05rem;">"Şair Evlenmesi" adlı ilk yerli tiyatro eseri kime aittir?</p>
+            
+            <button class="q-option" onclick="verify(false, this)">Namık Kemal</button>
+            <button class="q-option" onclick="verify(true, this)">İbrahim Şinasi</button>
+            <button class="q-option" onclick="verify(false, this)">Ahmet Mithat Efendi</button>
+        </div>
+
+        <div class="access-area">
+            <div class="lock-wrapper" id="lockIcon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <a href="edebiyatborsa.apk" class="cta-btn" id="dlBtn">
+                UYGULAMAYI İNDİR <i class="fas fa-download"></i>
+            </a>
+            <p id="msg" style="margin-top: 20px; font-size: 0.85rem; opacity: 0.4;">Uygulamaya erişmek için analizi tamamlayın.</p>
+        </div>
+
+        <div class="video-label">UYGULAMA ÖN İZLEME</div>
+        <div class="video-container">
+            <video width="100%" height="auto" controls poster="https://via.placeholder.com/600x340/1e1e2e/ffffff?text=Edebiyat+Borsa+Tanıtım">
+                <source src="tanitim.mp4" type="video/mp4">
+                Tarayıcınız video oynatmayı desteklemiyor.
+            </video>
+        </div>
+        
+        <footer style="margin: 40px 0; opacity: 0.3; font-size: 0.75rem;">
+            © 2026 SANTEZ SOFTWARE | SECURE DEPLOYMENT
+        </footer>
+    </div>
+
+    <script>
+        const infoData = [
+            "✦ İbrahim Şinasi: İlk yerli tiyatro 'Şair Evlenmesi' yazarıdır.",
+            "✦ Namık Kemal: İlk edebi roman 'İntibah'ın yazarıdır.",
+            "✦ Halit Ziya: İlk modern roman 'Mai ve Siyah'ın yazarıdır.",
+            "✦ YKS 2026: Edebiyatı borsa hırsıyla fethedin.",
+            "✦ Portföyünüzdeki her eser, sınavda net demektir."
+        ];
+        let infoIdx = 0;
+        setInterval(() => {
+            infoIdx = (infoIdx + 1) % infoData.length;
+            document.getElementById('infoStream').innerText = infoData[infoIdx];
+        }, 4500);
+
+        const target = new Date("June 20, 2026 10:15:00").getTime();
+        function updateTimer() {
+            const now = new Date().getTime();
+            const diff = target - now;
+            document.getElementById('d').innerText = Math.floor(diff / 86400000);
+            document.getElementById('h').innerText = Math.floor((diff % 86400000) / 3600000);
+            document.getElementById('m').innerText = Math.floor((diff % 3600000) / 60000);
+            document.getElementById('s').innerText = Math.floor((diff % 60000) / 1000);
+        }
+        setInterval(updateTimer, 1000); updateTimer();
+
+        function verify(correct, btn) {
+            const lock = document.getElementById('lockIcon');
+            const dlBtn = document.getElementById('dlBtn');
+            const msg = document.getElementById('msg');
+            const options = document.querySelectorAll('.q-option');
+
+            if(correct) {
+                options.forEach(o => o.style.opacity = "0.4");
+                btn.style.opacity = "1";
+                btn.style.borderColor = "var(--success)";
+                
+                lock.classList.add('lock-unlocked');
+                lock.innerHTML = '<i class="fas fa-unlock"></i>';
+                
+                msg.innerHTML = "✓ Analiz başarılı. İndirme bağlantısı aktif.";
+                msg.style.color = "var(--success)";
+
+                setTimeout(() => {
+                    dlBtn.classList.add('btn-active');
+                    dlBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 400);
+                options.forEach(o => o.disabled = true);
+            } else {
+                btn.style.borderColor = "#ef4444";
+                msg.innerHTML = "Hatalı Giriş. Verileri kontrol edin.";
+                msg.style.color = "#ef4444";
+                setTimeout(() => {
+                    btn.style.borderColor = "";
+                    msg.innerHTML = "Uygulamaya erişmek için analizi tamamlayın.";
+                    msg.style.color = "";
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>
