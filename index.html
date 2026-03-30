@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edebiyat Borsa RPG | YKS Eser Yazar Oyunu</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --primary: #6366f1; --bg: #ffffff; --text: #0f172a; --card: #f1f5f9; --card-border: #e2e8f0; --accent: #fbbf24; }
+        [data-theme="dark"] { --bg: #0f172a; --text: #f8fafc; --card: rgba(255,255,255,0.05); --card-border: #334155; }
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.3s ease; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        
+        /* Borsa Ticker */
+        .ticker-wrap { background: var(--primary); color: white; padding: 10px 0; overflow: hidden; font-weight: bold; }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 25s linear infinite; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        
+        /* Geri Sayım */
+        .countdown-container { padding: 15px; background: var(--card); border-bottom: 1px solid var(--card-border); font-weight: 800; display: flex; justify-content: center; gap: 10px; font-size: 0.9rem; }
+        .time-unit { color: var(--primary); }
+        
+        .theme-switch { position: fixed; top: 75px; right: 20px; z-index: 1000; background: var(--primary); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .hero { padding: 60px 20px; text-align: center; }
+        h1 { font-size: 3.5rem; color: var(--accent); margin-bottom: 10px; text-shadow: 0 4px 10px rgba(251, 191, 36, 0.2); }
+        
+        .download-btn { background: var(--primary); color: white; padding: 20px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.3rem; display: inline-block; margin-top: 20px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        /* Günün Sorusu Bölümü */
+        .daily-question { max-width: 600px; margin: 30px auto; padding: 25px; background: var(--card); border-radius: 20px; border: 2px solid var(--primary); transition: 0.5s ease-out; }
+        .q-option { display: block; width: 100%; padding: 14px; margin-top: 10px; background: var(--bg); border: 1px solid var(--card-border); border-radius: 10px; cursor: pointer; color: var(--text); font-size: 1rem; text-align: left; }
+        .q-option:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+        
+        /* Ekstra Animasyonlar */
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+        .dev-section { padding: 50px 10%; background: rgba(99, 102, 241, 0.05); margin: 40px 20px; border-radius: 30px; display: flex; flex-wrap: wrap; gap: 30px; align-items: center; }
+        .leader-card { flex: 1; min-width: 250px; text-align: center; border: 2px solid var(--accent); padding: 25px; border-radius: 20px; background: var(--bg); }
+        .dev-note { flex: 2; min-width: 300px; text-align: left; }
+        footer { padding: 40px; text-align: center; opacity: 0.6; font-size: 0.8rem; border-top: 1px solid var(--card-border); }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="ticker-wrap"><div class="ticker">📈 ALTIN S1: 112 EA (%+4.2) &nbsp;&nbsp;&nbsp; 📉 GÜMÜŞ: 45 EA (%-1.5) &nbsp;&nbsp;&nbsp; 🏆 LİDER: "YKS_Canavarı_Enes" &nbsp;&nbsp;&nbsp; 🚀 YKS 2026 TAYFA BURADA! &nbsp;&nbsp;&nbsp; </div></div>
+    <div class="countdown-container"><span>⏳ YKS 2026 Geri Sayım:</span><span id="countdown" class="time-unit">...</span></div>
+    <button class="theme-switch" onclick="toggleTheme()" id="themeBtn"><i class="fas fa-sun"></i></button>
+
+    <section class="hero">
+        <h1>EDEBİYAT BORSA RPG</h1>
+        <p>Eser ezberini borsa rekabetine dönüştür. YKS 2026'nın en eğlenceli hazırlık yolu!</p>
+        <a href="edebiyatborsa.apk" class="download-btn" id="apkBtn"><i class="fab fa-android"></i> Hemen APK İndir</a>
+    </section>
+
+    <section class="daily-question" id="qArea">
+        <h3><i class="fas fa-bolt" style="color: var(--accent);"></i> Günün Isınma Sorusu</h3>
+        <p style="margin: 15px 0; font-size: 1.1rem;">"Şair Evlenmesi" adlı ilk yerli tiyatro eserimiz kime aittir?</p>
+        <button class="q-option" onclick="checkQ(false, this)">A) Namık Kemal</button>
+        <button class="q-option" onclick="checkQ(true, this)">B) İbrahim Şinasi</button>
+        <button class="q-option" onclick="checkQ(false, this)">C) Abdülhak Hamit Tarhan</button>
+        <div id="q-feedback" style="margin-top: 15px; font-weight: bold; font-size: 1.1rem;"></div>
+    </section>
+
+    <section class="dev-section">
+        <div class="leader-card">
+            <i class="fas fa-crown" style="color: var(--accent); font-size: 2.5rem; margin-bottom: 10px;"></i>
+            <h3>Portföy Lideri</h3>
+            <p style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">🏆 --Bekleniyor--</p>
+            <small>Online sistemle yakında burada!</small>
+        </div>
+        <div class="dev-note">
+            <h2 style="color: var(--primary); margin-bottom: 15px;">Geliştiriciden Not</h2>
+            <p style="font-style: italic; line-height: 1.6;">"AYT Edebiyat çalışırken sıkıldığım o gece bu projeyi kodlamaya başladım. Bir 12. sınıf öğrencisi olarak süreci hepimiz için daha heyecanlı bir borsa oyununa çevirmek istedim. Başarılar!"</p>
+            <p style="margin-top: 15px; font-weight: bold;">- Santez Software</p>
+        </div>
+    </section>
+
+    <footer>© 2026 Edebiyat Borsa RPG | Tüm Hakları Saklıdır.</footer>
+
+    <script>
+        let questionStep = 1;
+
+        // Tema Değiştirme
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.querySelector('#themeBtn i');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light'); icon.className = 'fas fa-moon';
+            } else {
+                body.setAttribute('data-theme', 'dark'); icon.className = 'fas fa-sun';
+            }
+        }
+
+        // YKS Geri Sayım
+        const targetDate = new Date("June 14, 2026 10:00:00").getTime();
+        setInterval(() => {
+            const diff = targetDate - new Date().getTime();
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const mins = Math.floor((diff % 3600000) / 60000);
+            document.getElementById("countdown").innerHTML = `${days} Gün ${hours} Saat ${mins} Dakika`;
+        }, 1000);
+
+        // Akıllı Soru Sistemi
+        function checkQ(isCorrect, element) {
+            const f = document.getElementById('q-feedback');
+            const qArea = document.getElementById('qArea');
+            const apkBtn = document.getElementById('apkBtn');
+            const allOptions = document.querySelectorAll('.q-option');
+
+            // Tüm seçenekleri devre dışı bırak
+            allOptions.forEach(opt => opt.disabled = true);
+            
+            if (isCorrect) {
+                // Konfeti Patlatma
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 1001 });
+                
+                qArea.style.borderColor = "#10b981";
+                qArea.style.transform = "scale(1.02)";
+                
+                f.innerHTML = "<div style='animation: bounce 0.5s'>🌟 MUHTEŞEM! Portföyün değer kazandı. Hemen uygulamaya gel!</div>";
+                f.style.color = "#10b981";
+                element.style.borderColor = "#10b981";
+                element.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+
+                // 2 Saniye sonra APK butonuna nazikçe yönlendir
+                setTimeout(() => {
+                    qArea.style.transform = "scale(1)";
+                    f.innerHTML = "<div>🎁 Tebrikler! Hediyeni (APK) almak için yukarıdaki butona tıkla!</div>";
+                    apkBtn.style.animation = "shake 0.5s ease-in-out, bounce 1s 2";
+                }, 2000);
+
+            } else {
+                element.style.borderColor = "#ef4444";
+                element.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+
+                if (questionStep === 1) {
+                    // İlk Yanlış - Teşvik ve Yeni Soru
+                    questionStep = 2;
+                    qArea.style.borderColor = "#fbbf24";
+                    f.innerHTML = "🟡 Yaklaştın! Ama pes etmek yok, bu soru senin için:";
+                    f.style.color = "#fbbf24";
+                    
+                    // Soruyu değiştir (1 saniye sonra)
+                    setTimeout(() => {
+                        qArea.innerHTML = `
+                            <h3><i class="fas fa-redo"></i> Telafi Sorusu</h3>
+                            <p style="margin: 15px 0; font-size: 1.1rem;">"Mai ve Siyah" romanı hangi yazarımıza aittir?</p>
+                            <button class="q-option" onclick="checkQ(true, this)">A) Halit Ziya Uşaklıgil</button>
+                            <button class="q-option" onclick="checkQ(false, this)">B) Mehmet Rauf</button>
+                            <button class="q-option" onclick="checkQ(false, this)">C) Tevfik Fikret</button>
+                            <div id="q-feedback" style="margin-top: 15px; color: #fbbf24; font-weight: bold; font-size: 1.1rem;">Bir şansın daha var!</div>
+                        `;
+                    }, 1000);
+
+                } else {
+                    // İkinci Yanlış - Uygulamaya Yönlendirme
+                    qArea.style.borderColor = "#ef4444";
+                    f.innerHTML = "❌ Bilgi eksikliği tespit edildi! Hemen uygulamayı indirip açığını kapat.";
+                    f.style.color = "#ef4444";
+                    
+                    // APK butonuna nazikçe yönlendir (Sarsıntı efekti)
+                    setTimeout(() => {
+                        f.innerHTML = "<div>💡 Hemen indir ve borsa heyecanıyla öğrenmeye başla!</div>";
+                        apkBtn.style.animation = "shake 0.5s ease-in-out, float 3s ease-in-out infinite";
+                    }, 1500);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
